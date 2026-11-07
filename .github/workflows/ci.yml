@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      # Placeholders so env validation passes; nothing connects during these steps.
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+      NEON_AUTH_BASE_URL: https://example.invalid/auth
+      NEON_AUTH_COOKIE_SECRET: ci-placeholder-secret-at-least-32-chars
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
