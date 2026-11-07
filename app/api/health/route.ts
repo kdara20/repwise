@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { count, sql } from "drizzle-orm";
 import { connection } from "next/server";
 
@@ -17,7 +18,10 @@ export async function GET() {
       db: "up",
       latencyMs: Math.round(performance.now() - started),
     });
-  } catch {
+  } catch (error) {
+    // Keep the response opaque, but make the failure visible to us.
+    console.error("[health] database check failed:", error);
+    Sentry.captureException(error, { tags: { check: "health-db" } });
     return Response.json({ ok: false, db: "down" }, { status: 503 });
   }
 }
