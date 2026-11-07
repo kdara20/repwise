@@ -1,5 +1,9 @@
 <!-- BEGIN:nextjs-agent-rules -->
 
+## Database migrations
+
+Never migrate the `production` Neon branch directly. Run `neon checkout dev` first so `.env.local` targets the `dev` branch, then `npm run db:generate` and `npm run db:migrate`. `drizzle.config.ts` refuses to migrate production unless `ALLOW_PRODUCTION_MIGRATION=1` is set, which only the user should decide to do.
+
 ## This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
