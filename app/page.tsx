@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { FeaturedTrainers } from "./featured-trainers";
 
 export default function Home() {
   return (
@@ -28,6 +30,10 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      <Suspense>
+        <FeaturedTrainers />
+      </Suspense>
 
       <section className="border-t bg-muted/40">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:grid-cols-3">

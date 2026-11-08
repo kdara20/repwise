@@ -83,14 +83,20 @@ Validation: slug `^[a-z0-9-]{3,40}$` and not reserved; bio ≤ 2,000 chars; 1–
 `/`, `/auth/[path]` (sign-in, sign-up, forgot-password, … via Better Auth UI), `/settings/[path]`, `/trainers`, `/trainers/[slug]`, `/dashboard`, `/apply`, `/studio/profile`, `/admin/applications`, `/api/auth/[...path]`, `sitemap.xml`, `robots.txt`.
 
 ### Testing
-- **Unit (Vitest):** Zod schemas, slug generation/uniqueness, DAL guards (`requireTrainer`/`requireAdmin` reject the wrong roles).
-- **E2E (Playwright):** sign up → apply → admin approves → trainer edits and publishes profile → profile appears in directory search; non-admin gets 403/redirect on `/admin`; unpublished trainer not visible publicly.
+- **Unit (Vitest):** Zod schemas, slug generation/uniqueness, directory search-param parsing.
+- **E2E (Playwright, `e2e/`):** sign up → apply (validation keeps input) → non-admin sees "Access denied" → admin approves → new trainer hidden → trainer edits and publishes → searchable with correct metadata → specialty filter → unpublish hides it; signed-out redirects; unknown slug is not-found + `noindex`. Role guards (`requireTrainer`/`requireAdmin`) are covered here rather than with mocked unit tests.
+- **Running E2E:** local only, against the `dev` branch (refuses `production`): `npm run build && npm run test:e2e`. Teardown deletes every `e2e+…@example.com` user (needs the `neon` CLI logged in). Not in CI yet: it needs a Neon Auth instance per run.
+- **Status codes:** `forbidden()`/`notFound()` inside `<Suspense>` stream under a 200 (Partial Prerendering); Next adds `noindex`. Listed trainer pages are prerendered via `generateStaticParams`.
+
+### Making an admin
+Sign up, open `/dashboard` once (creates the profile), then on the target branch:
+`update profiles set is_admin = true where user_id = '<neon auth user id>';`
 
 ### Done when
-- [ ] Deployed to a Vercel preview backed by its own Neon branch.
-- [ ] All E2E flows above pass in CI.
-- [ ] A thrown test error shows up in Sentry with a readable stack trace.
-- [ ] Directory and profile pages work on mobile and in both themes, and return correct metadata.
+- [x] Deployed to a Vercel preview (shares the `dev` Neon branch; per-preview branches need the Neon ↔ Vercel integration).
+- [ ] All E2E flows pass in CI — they pass locally (17/17); CI runs lint, typecheck, unit tests, migrations, and build against a Postgres service.
+- [x] A thrown test error shows up in Sentry with a readable stack trace.
+- [x] Directory and profile pages work on mobile and in both themes, and return correct metadata.
 
 ### You need to set up (I can't create accounts)
 - Neon project with Neon Auth enabled; Google OAuth client ID/secret.

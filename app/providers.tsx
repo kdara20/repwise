@@ -25,6 +25,16 @@ export function Providers({ children }: { children: ReactNode }) {
             const path = getSafeRedirectTo(to, window.location.origin);
             // getSafeRedirectTo can still return protocol-relative paths.
             const target = path.startsWith("//") ? "/" : path;
+            if (!target.startsWith("/auth/")) {
+              // Leaving the auth views means the session just changed. The client
+              // router may hold pages prefetched while signed out (e.g. a cached
+              // redirect from /dashboard to sign-in), so load the page fresh.
+              if (replace) window.location.replace(target);
+              else window.location.assign(target);
+              return;
+            }
+            // Between auth views (e.g. after sign-out): drop stale cached pages.
+            router.refresh();
             if (replace) router.replace(target);
             else router.push(target);
           }}
