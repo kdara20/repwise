@@ -93,8 +93,17 @@ test.describe.serial("trainer onboarding", () => {
     await applicant.getByLabel("Publish profile").check();
     await applicant.getByRole("button", { name: "Save profile" }).click();
     await expect(applicant.getByText("Saved. Your profile is live.")).toBeVisible();
+
+    // Regression: React's post-action form reset used to blank the province
+    // <select>, so a second save without reloading cleared it in the database.
+    await expect(applicant.getByLabel("City")).toHaveValue("Toronto");
+    await expect(applicant.getByLabel("Province / territory")).toHaveValue("ON");
+    await applicant.getByRole("button", { name: "Save profile" }).click();
+    await expect(applicant.getByText("Saved. Your profile is live.")).toBeVisible();
+    await expect(applicant.getByLabel("Province / territory")).toHaveValue("ON");
   });
 
+  // Filters by province=ON, so this also proves the second save above kept it.
   test("published profile is searchable and has SEO metadata", async () => {
     await visitor.goto(`/trainers?q=${searchWord}&province=ON`);
     const card = visitor.getByRole("link", { name: new RegExp(name) });

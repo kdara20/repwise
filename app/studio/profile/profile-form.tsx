@@ -130,7 +130,13 @@ export function ProfileForm({ trainer: saved }: { trainer: ProfileDraft }) {
           </Field>
           <Field data-invalid={!!errors("province")}>
             <FieldLabel htmlFor="province">Province / territory</FieldLabel>
-            <ProvinceSelect defaultValue={trainer.province} invalid={!!errors("province")} />
+            <ProvinceSelect
+              // React's post-action form reset restores a <select> to its *initial*
+              // default, not the latest one; remounting on the saved value fixes it.
+              key={trainer.province ?? ""}
+              defaultValue={trainer.province}
+              invalid={!!errors("province")}
+            />
             <FieldError errors={errors("province")} />
           </Field>
         </div>
