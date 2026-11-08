@@ -2,8 +2,10 @@ import { FieldDescription, FieldError, FieldLegend, FieldSet } from "@/component
 import { PROVINCES, SPECIALTIES, SPECIALTY_LABELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
+// Options get explicit theme colours: some browsers (Chrome on Windows) draw the
+// open list with a white background regardless of the select's text colour.
 const nativeSelect =
-  "h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive dark:bg-input/30";
+  "h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive dark:bg-input/30 [&_option]:bg-background [&_option]:text-foreground";
 
 /** Native checkboxes so the form works before hydration and posts every value. */
 export function SpecialtyPicker({
